@@ -1,5 +1,6 @@
 using CompanyEmployees.Extensions;
 using Contracts;
+using FluentValidation;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
@@ -13,6 +14,10 @@ builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
+builder.Services.AddMediatR(cfg =>
+cfg.RegisterServicesFromAssembly(typeof(Application.AssemblyReference).Assembly));
+builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddValidatorsFromAssembly(typeof(Application.AssemblyReference).Assembly);
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -24,6 +29,7 @@ builder.Services.AddControllers(config => {
 	config.ReturnHttpNotAcceptable = true;
 }).AddXmlDataContractSerializerFormatters()
   .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
+
 
 var app = builder.Build();
 
